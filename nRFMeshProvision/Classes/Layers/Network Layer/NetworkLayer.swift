@@ -251,10 +251,10 @@ private extension NetworkLayer {
         // The library does not retransmit Secure Network Beacon.
         // If this node is a member of a primary subnet and receives a Secure Network
         // beacon on a secondary subnet, it will disregard it.
-        if let _ = meshNetwork.networkKeys.primaryKey, networkKey.isSecondary {
-            logger?.w(.network, "Discarding beacon for secondary network (key index: \(networkKey.index))")
-            return
-        }
+//        if let _ = meshNetwork.networkKeys.primaryKey, networkKey.isSecondary {
+//            logger?.w(.network, "Discarding beacon for secondary network (key index: \(networkKey.index))")
+//            return
+//        }
         
         // Get the last IV Index.
         //
