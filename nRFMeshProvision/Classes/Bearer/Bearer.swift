@@ -135,6 +135,7 @@ public protocol ProvisioningBearer: Bearer {
 
 public protocol MXProvisioningBearer: MeshBearer, ProvisioningBearer {
     func switchToProxyBearer() -> Bool
+    
 }
 
 extension ProvisioningBearer {

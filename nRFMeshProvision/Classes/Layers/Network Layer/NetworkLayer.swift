@@ -88,15 +88,15 @@ internal class NetworkLayer {
         }
         
         // Secure Network Beacons can repeat whenever the device connects to a new Proxy.
-        if type != .meshBeacon {
-            // Ensure the PDU has not been handled already.
-            guard networkMessageCache.object(forKey: pdu as NSData) == nil else {
-                // PDU has already been handled.
-                logger?.d(.network, "PDU already handled")
-                return
-            }
-            networkMessageCache.setObject(NSNull(), forKey: pdu as NSData)
-        }
+//        if type != .meshBeacon {
+//            // Ensure the PDU has not been handled already.
+//            guard networkMessageCache.object(forKey: pdu as NSData) == nil else {
+//                // PDU has already been handled.
+//                logger?.d(.network, "PDU already handled")
+//                return
+//            }
+//            networkMessageCache.setObject(NSNull(), forKey: pdu as NSData)
+//        }
         
         // Try decoding the PDU.
         switch type {
@@ -251,10 +251,10 @@ private extension NetworkLayer {
         // The library does not retransmit Secure Network Beacon.
         // If this node is a member of a primary subnet and receives a Secure Network
         // beacon on a secondary subnet, it will disregard it.
-//        if let _ = meshNetwork.networkKeys.primaryKey, networkKey.isSecondary {
-//            logger?.w(.network, "Discarding beacon for secondary network (key index: \(networkKey.index))")
-//            return
-//        }
+        if let _ = meshNetwork.networkKeys.primaryKey, networkKey.isSecondary {
+            logger?.w(.network, "Discarding beacon for secondary network (key index: \(networkKey.index))")
+            return
+        }
         
         // Get the last IV Index.
         //
