@@ -61,6 +61,9 @@ open class BaseGattProxyBearer<Service: MeshService>: NSObject, Bearer, CBCentra
     }
     
     public var isOpen: Bool {
+        if !(basePeripheral != nil) {
+            return false
+        }
         return basePeripheral.state == .connected &&
                dataOutCharacteristic?.isNotifying ?? false
     }

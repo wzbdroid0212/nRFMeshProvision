@@ -322,12 +322,12 @@ private extension LowerTransportLayer {
                 reassemblyInProgress = incompleteSegments[key] != nil ||
                                        acknowledgments[networkPdu.source]?.sequenceZero == sequenceZero
             }
-            guard receivedSeqAuth > localSeqAuth.uint64Value ||
-                  (reassemblyInProgress && receivedSeqAuth == localSeqAuth.uint64Value) else {
-                // Ignore that message.
-                logger?.w(.lowerTransport, "Discarding packet (seqAuth: \(receivedSeqAuth), expected > \(localSeqAuth))")
-                return false
-            }
+//            guard receivedSeqAuth > localSeqAuth.uint64Value ||
+//                  (reassemblyInProgress && receivedSeqAuth == localSeqAuth.uint64Value) else {
+//                // Ignore that message.
+//                logger?.w(.lowerTransport, "Discarding packet (seqAuth: \(receivedSeqAuth), expected > \(localSeqAuth))")
+//                return false
+//            }
         }
         // SeqAuth is valid, save the new sequence authentication value.
         defaults.set(NSNumber(value: receivedSeqAuth), forKey: networkPdu.source.hex)
