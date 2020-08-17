@@ -38,8 +38,12 @@ public class MeshNetworkManager {
     /// Storage to keep the app data.
     private let storage: Storage
     
-    /// A queue to handle incoming and outgoing messages.
+    /// A queue to handle outgoing messages.
     internal let queue: DispatchQueue
+    
+    /// A queue to handle incoming messages.
+    internal let inQueue: DispatchQueue
+    
     /// A queue to call delegate methods on.
     internal let delegateQueue: DispatchQueue
     
@@ -167,10 +171,12 @@ public class MeshNetworkManager {
     /// error,and add to cocurrent mode after LowTransportLayer handler
     /// original: queue: DispatchQueue = DispatchQueue.global(qos: .background),
     public init(using storage: Storage = LocalStorage(),
-                queue: DispatchQueue = DispatchQueue(label: "Bearer"),
+                inQueue: DispatchQueue = DispatchQueue(label: "inBearer"),
+                queue: DispatchQueue = DispatchQueue.global(qos: .background),
                 delegateQueue: DispatchQueue = DispatchQueue.main) {
         self.storage = storage
         self.meshData = MeshData()
+        self.inQueue = inQueue
         self.queue = queue
         self.delegateQueue = delegateQueue
     }
@@ -295,7 +301,7 @@ public extension MeshNetworkManager {
         guard let networkManager = networkManager else {
             return
         }
-        queue.async {
+        inQueue.async {
             networkManager.handle(incomingPdu: data, ofType: type)
         }
     }

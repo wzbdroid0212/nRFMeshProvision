@@ -322,12 +322,12 @@ private extension LowerTransportLayer {
                 reassemblyInProgress = incompleteSegments[key] != nil ||
                                        acknowledgments[networkPdu.source]?.sequenceZero == sequenceZero
             }
-//            guard receivedSeqAuth > localSeqAuth.uint64Value ||
-//                  (reassemblyInProgress && receivedSeqAuth == localSeqAuth.uint64Value) else {
-//                // Ignore that message.
-//                logger?.w(.lowerTransport, "Discarding packet (seqAuth: \(receivedSeqAuth), expected > \(localSeqAuth))")
-//                return false
-//            }
+            guard receivedSeqAuth > localSeqAuth.uint64Value ||
+                  (reassemblyInProgress && receivedSeqAuth == localSeqAuth.uint64Value) else {
+                // Ignore that message.
+                logger?.w(.lowerTransport, "Discarding packet (seqAuth: \(receivedSeqAuth), expected > \(localSeqAuth))")
+                return false
+            }
         }
         // SeqAuth is valid, save the new sequence authentication value.
         defaults.set(NSNumber(value: receivedSeqAuth), forKey: networkPdu.source.hex)
@@ -507,14 +507,14 @@ private extension LowerTransportLayer {
     ///   - ack: The Segment Acknowledgment Message to sent.
     ///   - ttl: Initial Time To Live (TTL) value.
     func sendAck(_ ack: SegmentAcknowledgmentMessage, withTtl ttl: UInt8) {
-        DispatchQueue.global(qos: .background).async {
+        //DispatchQueue.global(qos: .background).async {
             self.logger?.d(.lowerTransport, "Sending \(ack)")
             do {
                 try self.networkManager.networkLayer.send(lowerTransportPdu: ack, ofType: .networkPdu, withTtl: ttl)
             } catch {
                 self.logger?.w(.lowerTransport, error)
             }
-        }
+        //}
     }
     
     /// Sends all non-`nil` segments from `outgoingSegments` map from the given
