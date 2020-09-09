@@ -275,6 +275,16 @@ public class ProvisioningManager {
             obtainAuthValue()
         }
     }
+    
+    public func removeBearer() {        
+        // Restore original delegates.
+        bearer.delegate = bearerDelegate
+        bearer.dataDelegate = bearerDataDelegate
+        bearerDelegate = nil
+        bearerDataDelegate = nil
+
+        reset()
+    }
 }
 
 extension ProvisioningManager: BearerDelegate, BearerDataDelegate {
@@ -344,17 +354,8 @@ extension ProvisioningManager: BearerDelegate, BearerDataDelegate {
             // Calculate the Unicast Address automatically based on the
             // elements count.
             if unicastAddress == nil, let provisioner = meshNetwork.localProvisioner {
-				let testMode = false
-				if testMode {
-					let count = capabilities.numberOfElements
-					unicastAddress = meshNetwork.nextAvailableUnicastAddress(for: count, elementsUsing: provisioner)
-					suggestedUnicastAddress = unicastAddress
-
-				} else {
-					unicastAddress = provisioner.nextAvailableAddress + 1
-					suggestedUnicastAddress = unicastAddress
-				}
-				
+                unicastAddress = provisioner.nextAvailableAddress + 1
+                suggestedUnicastAddress = unicastAddress
             }
             state = .capabilitiesReceived(capabilities)
             if unicastAddress == nil {
