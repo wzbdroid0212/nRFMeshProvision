@@ -47,6 +47,11 @@ public class Provisioner: Codable {
             }
         }
     }
+	public var nextAvailableAddress: Address!
+//	public var nextAvailableAddress: Address {
+//		return (meshNetwork?.nextAvailableUnicastAddress(for: self))!
+//	}
+	
     /// An array of unicast range objects.
     public internal(set) var allocatedUnicastRange: [AddressRange]
     /// An array of group range objects.
@@ -58,23 +63,27 @@ public class Provisioner: Codable {
                 uuid: UUID,
                 allocatedUnicastRange: [AddressRange],
                 allocatedGroupRange:   [AddressRange],
-                allocatedSceneRange:   [SceneRange]) {
+                allocatedSceneRange:   [SceneRange],
+				nextAvailableAddress:  Address) {
         self.provisionerName = name
         self.provisionerUuid = MeshUUID(uuid)
         self.allocatedUnicastRange = allocatedUnicastRange.merged()
         self.allocatedGroupRange   = allocatedGroupRange.merged()
         self.allocatedSceneRange   = allocatedSceneRange.merged()
+		self.nextAvailableAddress = nextAvailableAddress
     }
     
     public convenience init(name: String,
                             allocatedUnicastRange: [AddressRange],
                             allocatedGroupRange:   [AddressRange],
-                            allocatedSceneRange:   [SceneRange]) {
+                            allocatedSceneRange:   [SceneRange],
+							nextAvailableAddress:  Address) {
         self.init(name: name,
                   uuid: UUID(),
                   allocatedUnicastRange: allocatedUnicastRange,
                   allocatedGroupRange:   allocatedGroupRange,
-                  allocatedSceneRange:   allocatedSceneRange
+                  allocatedSceneRange:   allocatedSceneRange,
+				  nextAvailableAddress:  nextAvailableAddress
         )
     }
     
@@ -83,7 +92,8 @@ public class Provisioner: Codable {
                   uuid: UUID(),
                   allocatedUnicastRange: [AddressRange.allUnicastAddresses],
                   allocatedGroupRange:   [AddressRange.allGroupAddresses],
-                  allocatedSceneRange:   [SceneRange.allScenes]
+                  allocatedSceneRange:   [SceneRange.allScenes],
+				  nextAvailableAddress:  0x0003
         )
     }
     
@@ -95,6 +105,7 @@ public class Provisioner: Codable {
         case allocatedUnicastRange
         case allocatedGroupRange
         case allocatedSceneRange
+		case nextAvailableAddress
     }
     
     public required init(from decoder: Decoder) throws {
@@ -104,6 +115,7 @@ public class Provisioner: Codable {
         allocatedUnicastRange = try container.decode([AddressRange].self, forKey: .allocatedUnicastRange).merged()
         allocatedGroupRange = try container.decode([AddressRange].self, forKey: .allocatedGroupRange).merged()
         allocatedSceneRange = try container.decode([SceneRange].self, forKey: .allocatedSceneRange).merged()
+		nextAvailableAddress = try container.decode(Address.self, forKey: .nextAvailableAddress)
     }
 }
 
