@@ -354,7 +354,7 @@ extension ProvisioningManager: BearerDelegate, BearerDataDelegate {
             // Calculate the Unicast Address automatically based on the
             // elements count.
             if unicastAddress == nil, let provisioner = meshNetwork.localProvisioner {
-                unicastAddress = provisioner.nextAvailableAddress + 1
+                unicastAddress = provisioner.nextAvailableAddress
                 suggestedUnicastAddress = unicastAddress
             }
             state = .capabilitiesReceived(capabilities)

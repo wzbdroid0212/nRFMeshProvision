@@ -47,11 +47,14 @@ public class Provisioner: Codable {
             }
         }
     }
-	public var nextAvailableAddress: Address!
-//	public var nextAvailableAddress: Address {
-//		return (meshNetwork?.nextAvailableUnicastAddress(for: self))!
-//	}
-	
+	  public var nextAvailableAddress: Address!
+    public func increaseAvailableAddress() {
+        if nextAvailableAddress == 0x199A {
+            nextAvailableAddress = 0x0003
+        } else {
+            nextAvailableAddress += 1
+        }
+    }	
     /// An array of unicast range objects.
     public internal(set) var allocatedUnicastRange: [AddressRange]
     /// An array of group range objects.
