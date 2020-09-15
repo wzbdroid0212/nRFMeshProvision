@@ -323,9 +323,10 @@ private extension LowerTransportLayer {
                                        acknowledgments[networkPdu.source]?.sequenceZero == sequenceZero
             }
             guard receivedSeqAuth > localSeqAuth.uint64Value ||
-                  (reassemblyInProgress && receivedSeqAuth == localSeqAuth.uint64Value) else {
+                  (reassemblyInProgress) else {
                 // Ignore that message.
-                logger?.w(.lowerTransport, "Discarding packet (seqAuth: \(receivedSeqAuth), expected > \(localSeqAuth))")
+                let key = UInt32(keyFor: networkPdu.source, sequenceZero: UInt16(sequence & 0x1FFF))
+                logger?.w(.lowerTransport, "Discarding packet (seqAuth: \(receivedSeqAuth), expected > \(localSeqAuth), key: \(key), \(incompleteSegments.count), \(reassemblyInProgress)")
                 return false
             }
         }
@@ -374,6 +375,7 @@ private extension LowerTransportLayer {
             // be received before it can be processed.
             let key = UInt32(keyFor: networkPdu.source, sequenceZero: segment.sequenceZero)
             if incompleteSegments[key] == nil {
+                logger?.i(.lowerTransport, "Create incompleteSegments \(key).")
                 incompleteSegments[key] = Array<SegmentedMessage?>(repeating: nil, count: segment.count)
             }
             guard incompleteSegments[key]!.count > segment.index else {
@@ -428,9 +430,11 @@ private extension LowerTransportLayer {
                 // timer is inactive, it shall restart the timer. Active timer should not be restarted.
                 if acknowledgmentTimers[key] == nil {
                     let ttl = provisionerNode.defaultTTL ?? networkManager.defaultTtl
+                    self.logger?.i(.lowerTransport, "Create new acknowledgmentTimers for \(key), exist \(acknowledgmentTimers.count), after \(networkManager.acknowledgmentTimerInterval(ttl))")
                     acknowledgmentTimers[key] = BackgroundTimer.scheduledTimer(withTimeInterval: networkManager.acknowledgmentTimerInterval(ttl), repeats: false) { _ in
                         if let segments = self.incompleteSegments[key] {
                             let ttl = networkPdu.ttl > 0 ? ttl : 0
+                            self.logger?.i(.lowerTransport, "Send partial Ack")
                             self.sendAck(for: segments, withTtl: ttl)
                         }
                         self.acknowledgmentTimers.removeValue(forKey: key)?.invalidate()
