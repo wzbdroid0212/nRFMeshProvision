@@ -50,6 +50,7 @@ public extension Address {
     
     // Add Group Address for ATT Report
     static let MxATTReportGroupAddress: Address = 0xD000
+    static let MxNewGroupAddress: Address = 0xD003
 }
 
 // MARK: - Helper methods

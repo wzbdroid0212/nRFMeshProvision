@@ -238,6 +238,8 @@ public extension ProxyFilter {
         addresses.insert(Address.allNodes)
         // Add MXCHIP Beacon and ATT Status group address.
         addresses.insert(Address.MxATTReportGroupAddress)
+        // Add D003
+        addresses.insert(Address.MxNewGroupAddress)
         // Submit.
         add(addresses: addresses)
     }
