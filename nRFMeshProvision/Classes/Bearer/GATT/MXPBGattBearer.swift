@@ -157,6 +157,9 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
             // `false` even when nothing was sent before and no callback is called afterwards.
             // Just assume, that the first packet can always be sent.
             if queueWasEmpty {
+                if queue.count == 0 {
+                    return
+                }
                 let packet = queue.remove(at: 0)
                 logger?.d(.bearer, "-> 0x\(packet.hex)")
                 basePeripheral.writeValue(packet, for: dataInCharacteristic, type: .withoutResponse)
