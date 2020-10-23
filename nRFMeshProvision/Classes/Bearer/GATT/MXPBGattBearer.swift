@@ -36,7 +36,7 @@ import CoreBluetooth
 /// This object is not required to be used with nRF Mesh Provisioning library.
 /// Bearers are separate from the mesh networking part and the data must be
 /// passed to and from by the application.
-open class MxPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDelegate, CBPeripheralDelegate {
+open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDelegate, CBPeripheralDelegate {
     
     // MARK: - Properties
     public weak var delegate: BearerDelegate?
