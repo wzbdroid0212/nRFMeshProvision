@@ -36,7 +36,8 @@ import CoreBluetooth
 /// This object is not required to be used with nRF Mesh Provisioning library.
 /// Bearers are separate from the mesh networking part and the data must be
 /// passed to and from by the application.
-open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDelegate, CBPeripheralDelegate {
+open class MxPBGattBearer: NSObject, MxProvisioningBearer, CBCentralManagerDelegate, CBPeripheralDelegate {
+    
     // MARK: - Properties
     public weak var delegate: BearerDelegate?
     public weak var dataDelegate: BearerDataDelegate?
@@ -60,7 +61,8 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
     }
     
     public var isOpen: Bool {
-        return dataOutCharacteristic?.isNotifying ?? false
+        return basePeripheral.state == .connected &&
+               dataOutCharacteristic?.isNotifying ?? false
     }
     
     /// The UUID associated with the peer.
@@ -129,7 +131,6 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
         self.dataOutCharacteristic = dataOutCharacteristic
         self.dataInCharacteristic = proxyDataInCharacteristic
         enableNotifications(for: dataOutCharacteristic)
-        logger?.v(.bearer, "Swithed to GATT bearer...")
         return true
     }
     
@@ -154,7 +155,7 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
             let packet: Data? = mutex.sync {
                 let queueWasEmpty = queue.isEmpty
                 queue.append(contentsOf: packets)
-                
+            
                 // Don't look at `basePeripheral.canSendWriteWithoutResponse`. If often returns
                 // `false` even when nothing was sent before and no callback is called afterwards.
                 // Just assume, that the first packet can always be sent.
@@ -300,10 +301,10 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
             if let characteristics = service.characteristics {
                 for characteristic in characteristics {
                     if MeshProxyService.dataInUuid == characteristic.uuid {
-                        logger?.v(.bearer, "Data In characteristic found")
+                        logger?.v(.bearer, "Proxy Data In characteristic found")
                         proxyDataInCharacteristic = characteristic
                     } else if MeshProxyService.dataOutUuid == characteristic.uuid {
-                        logger?.v(.bearer, "Data Out characteristic found")
+                        logger?.v(.bearer, "Proxy Data Out characteristic found")
                         proxyDataOutCharacteristic = characteristic
                     }
                 }
@@ -315,10 +316,10 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
         if let characteristics = service.characteristics {
             for characteristic in characteristics {
                 if MeshProvisioningService.dataInUuid == characteristic.uuid {
-                    logger?.v(.bearer, "Data In characteristic found")
+                    logger?.v(.bearer, "Provisioning Data In characteristic found")
                     dataInCharacteristic = characteristic
                 } else if MeshProvisioningService.dataOutUuid == characteristic.uuid {
-                    logger?.v(.bearer, "Data Out characteristic found")
+                    logger?.v(.bearer, "Provisioning Data Out characteristic found")
                     dataOutCharacteristic = characteristic
                 }
             }
@@ -382,10 +383,11 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
     // This method is available only on iOS 11+.
     open func peripheralIsReady(toSendWriteWithoutResponse peripheral: CBPeripheral) {
         let packet: Data? = mutex.sync {
-            if queue.isEmpty {
-                return nil
-            } else {
-                return queue.remove(at: 0)
+                if queue.isEmpty {
+                    return nil
+                } else {
+                    return queue.remove(at: 0)
+                }
             }
         }
         if let packet = packet {
@@ -393,10 +395,7 @@ open class MXPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDeleg
             peripheral.writeValue(packet, for: dataInCharacteristic!, type: .withoutResponse)
         }
     }
-    
 }
-
-
 
 //extension CBManagerState: CustomDebugStringConvertible {
 //

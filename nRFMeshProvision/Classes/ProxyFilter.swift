@@ -398,10 +398,10 @@ internal extension ProxyFilter {
             counter = 0
             
             // And notify the app.
-//            if waitingForSetup {
-//                waitingForSetup = false
+            if waitingForSetup {
+                waitingForSetup = false
                 NotificationCenter.default.post(name: NSNotification.Name("MESH_CONNECTED"), object: nil)
-//            }
+            }
         default:
             // Ignore.
             break
