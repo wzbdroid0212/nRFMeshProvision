@@ -36,7 +36,7 @@ import CoreBluetooth
 /// This object is not required to be used with nRF Mesh Provisioning library.
 /// Bearers are separate from the mesh networking part and the data must be
 /// passed to and from by the application.
-open class MxPBGattBearer: NSObject, MxProvisioningBearer, CBCentralManagerDelegate, CBPeripheralDelegate {
+open class MxPBGattBearer: NSObject, MXProvisioningBearer, CBCentralManagerDelegate, CBPeripheralDelegate {
     
     // MARK: - Properties
     public weak var delegate: BearerDelegate?
@@ -383,11 +383,10 @@ open class MxPBGattBearer: NSObject, MxProvisioningBearer, CBCentralManagerDeleg
     // This method is available only on iOS 11+.
     open func peripheralIsReady(toSendWriteWithoutResponse peripheral: CBPeripheral) {
         let packet: Data? = mutex.sync {
-                if queue.isEmpty {
-                    return nil
-                } else {
-                    return queue.remove(at: 0)
-                }
+            if queue.isEmpty {
+                return nil
+            } else {
+                return queue.remove(at: 0)
             }
         }
         if let packet = packet {
