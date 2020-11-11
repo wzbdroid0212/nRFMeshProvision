@@ -322,7 +322,7 @@ private extension LowerTransportLayer {
                 reassemblyInProgress = incompleteSegments[key] != nil ||
                                        acknowledgments[networkPdu.source]?.sequenceZero == sequenceZero
             }
-            guard receivedSeqAuth > localSeqAuth.uint64Value ||
+            guard receivedSeqAuth >= localSeqAuth.uint64Value ||
                   (reassemblyInProgress) else {
                 // Ignore that message.
                 let key = UInt32(keyFor: networkPdu.source, sequenceZero: UInt16(sequence & 0x1FFF))
