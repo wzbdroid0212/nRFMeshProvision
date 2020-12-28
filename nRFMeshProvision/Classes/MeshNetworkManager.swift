@@ -363,10 +363,10 @@ public extension MeshNetworkManager {
             print("Error: Local Provisioner has no Unicast Address assigned")
             throw AccessError.invalidSource
         }
-        guard source.parentNode == localNode else {
-            print("Error: The Element does not belong to the local Node")
-            throw AccessError.invalidElement
-        }
+//        guard source.parentNode == localNode else {
+//            print("Error: The Element does not belong to the local Node")
+//            throw AccessError.invalidElement
+//        }
         guard initialTtl == nil || initialTtl == 0 || (2...127).contains(initialTtl!) else {
             print("Error: TTL value \(initialTtl!) is invalid")
             throw AccessError.invalidTtl
